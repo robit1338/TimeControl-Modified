@@ -1,4 +1,4 @@
-let cols = [Pal.lancerLaser, Pal.accent, Color.valueOf("cc6eaf")]; //Pink from BetaMindy
+let cols = [Pal.lancerLaser, Pal.accent, Color.valueOf("cc6eaf")];
 let folded = false;
 let curSpeed = 0;
 let longPress = 30;
@@ -10,11 +10,13 @@ let foldedButton = null;
 function sliderTable(table){
     table.table(Tex.buttonEdge3, t => {
         t.name = "tc-slidertable";
-        timeSlider = new Slider(-8, 8, 1, false);
+        // Change Here
+        timeSlider = new Slider(-8, 4, 1, false);
         timeSlider.setValue(0);
         
         let l = t.button("[accent]x1", () => {
-            curSpeed = Mathf.clamp(curSpeed, -2, 2) - 1;
+            // Change Here
+            curSpeed = Mathf.clamp(curSpeed, -2, 4) - 1;
             foldedButton.fireClick();
             folded = true;
         }).grow().width(10.5 * 8).get();
@@ -32,7 +34,7 @@ function sliderTable(table){
             let speed = Math.pow(2, v);
             Time.setDeltaProvider(() => Math.min(Core.graphics.getDeltaTime() * 60 * speed, 3 * speed));
             
-            Tmp.c1.lerp(cols, (timeSlider.getValue() + 8) / 16);
+            Tmp.c1.lerp(cols, (timeSlider.getValue() + 8) / 12); // Change Here
             
             l.setText(speedText(v));
         });
@@ -45,7 +47,8 @@ function foldedButtonTable(table){
         t.name = "tc-foldedtable";
         foldedButton = t.button("[accent]x1", () => {
             curSpeed++;
-            if(curSpeed > 2) curSpeed = -2;
+            // Max val: 4 (16x)
+            if(curSpeed > 4) curSpeed = -2;
             
             let speed = Math.pow(2, curSpeed);
             Time.setDeltaProvider(() => Math.min(Core.graphics.getDeltaTime() * 60 * speed, 3 * speed));
@@ -71,7 +74,7 @@ function foldedButtonTable(table){
 }
 
 function speedText(speed){
-    Tmp.c1.lerp(cols, (speed + 8) / 16);
+    Tmp.c1.lerp(cols, (speed + 8) / 12); // Change Here
     let text = "[#" + Tmp.c1.toString() + "]";
     if(speed >= 0){
         text += "x" + Math.pow(2, speed);
@@ -81,15 +84,12 @@ function speedText(speed){
     return text;
 }
 
-function speedText(speed){
-    Tmp.c1.lerp(cols, (speed + 8) / 12); // Change Here
-    let text = "[#" + Tmp.c1.toString() + "]";
-    if(speed >= 0){
-        text += "x" + Math.pow(2, speed);
-    }else{
-        text += "x1/" + Math.pow(2, Math.abs(speed));
-    }
-    return text;
+function visibility(){
+    if(!Vars.ui.hudfrag.shown || Vars.ui.minimapfrag.shown()) return false;
+    if(!Vars.mobile) return true;
+    
+    let input = Vars.control.input;
+    return input.lastSchematic == null || input.selectPlans.isEmpty();
 }    
 
 if(!Vars.headless){
@@ -101,7 +101,7 @@ if(!Vars.headless){
         
         let st = new Table();
         st.bottom().left();
-        sliderTable(st);
+        sliderTable(st);			
         Vars.ui.hudGroup.addChild(st);
         
         if(Vars.mobile){
