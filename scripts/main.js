@@ -81,12 +81,15 @@ function speedText(speed){
     return text;
 }
 
-function visibility(){
-    if(!Vars.ui.hudfrag.shown || Vars.ui.minimapfrag.shown()) return false;
-    if(!Vars.mobile) return true;
-    
-    let input = Vars.control.input;
-    return input.lastSchematic == null || input.selectPlans.isEmpty();
+function speedText(speed){
+    Tmp.c1.lerp(cols, (speed + 8) / 12); // Change Here
+    let text = "[#" + Tmp.c1.toString() + "]";
+    if(speed >= 0){
+        text += "x" + Math.pow(2, speed);
+    }else{
+        text += "x1/" + Math.pow(2, Math.abs(speed));
+    }
+    return text;
 }    
 
 if(!Vars.headless){
